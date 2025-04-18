@@ -1,0 +1,13 @@
+# Laravel
+todo-list/vendor/
+todo-list/node_modules/
+todo-list/storage/*.key
+todo-list/.env
+
+# Golang (bisa disesuaikan jika pakai Go modules)
+todo-list-be/bin/
+todo-list-be/.env
+
+# Docker
+*.log
+.env

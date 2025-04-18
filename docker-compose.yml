@@ -1,0 +1,54 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: todo-list
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  laravel:
+    build:
+      context: ./todo-list
+    container_name: laravel
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./todo-list:/var/www
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    command: php artisan serve --host=0.0.0.0 --port=8000
+
+  golang:
+    build:
+      context: ./todo-list-be
+    container_name: golang
+    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - ./todo-list-be:/app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+  migrate:
+    build:
+      context: ./todo-list-be
+    container_name: golang-migrate
+    working_dir: /app
+    command: go run ./cmd/migrate
+    depends_on:
+      - postgres
+    volumes:
+      - ./todo-list-be:/app
+
+
+volumes:
+  pgdata:
